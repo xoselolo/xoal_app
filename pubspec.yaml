@@ -30,6 +30,10 @@ dependencies:
   cupertino_icons: ^1.0.1
 
   percent_indicator: ^2.1.9
+  google_sign_in: ^4.5.9
+  sign_button: ^1.0.1
+  avatar_glow: ^1.2.0
+
 
 dev_dependencies:
   flutter_test:
@@ -54,6 +58,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/seeds.png
+    - assets/logo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
