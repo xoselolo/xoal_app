@@ -1,12 +1,16 @@
-import 'dart:math';
-
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_button/sign_button.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 
-// ignore: must_be_immutable
+import 'home_page.dart';
+
+final FirebaseAuth _auth = FirebaseAuth.instance;
+final GoogleSignIn googleSignIn = GoogleSignIn();
+
 class SigninPage extends StatefulWidget {
   SigninPage({Key key}) : super(key: key);
 
@@ -19,6 +23,37 @@ class SigninPage extends StatefulWidget {
 
 class _SigninPageState extends State<SigninPage> {
 
+  Future<String> signInWithGoogle() async {
+
+    await Firebase.initializeApp();
+
+    final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+    final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
+
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleSignInAuthentication.accessToken,
+      idToken: googleSignInAuthentication.idToken,
+    );
+
+    final UserCredential authResult = await _auth.signInWithCredential(credential);
+    final User user = authResult.user;
+
+    if (user != null) {
+      print("Hola: ");
+      print(user);
+      assert(!user.isAnonymous);
+      assert(await user.getIdToken() != null);
+
+      final User currentUser = _auth.currentUser;
+      assert(user.uid == currentUser.uid);
+
+      print('signInWithGoogle succeeded: $user');
+
+      return '$user';
+    }
+
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +82,15 @@ class _SigninPageState extends State<SigninPage> {
                 buttonType: ButtonType.google,
                 onPressed: () {
                   print('click');
+                  signInWithGoogle().then((result){
+                    if(result != null){
+                      Navigator.push(
+                        context, MaterialPageRoute(
+                          builder: (context) => MyHomePage(username: "xoselolo", experience: "3 planted",)
+                        )
+                      );
+                    }
+                  });
                 }
             )
           ],
